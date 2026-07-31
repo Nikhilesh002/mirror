@@ -212,12 +212,14 @@
       }
       .endpoint-url {
         color: #bfe6ff;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        font-family:
+          ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
           "Liberation Mono", monospace;
       }
       .endpoints td:nth-child(2) {
         color: #eee;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        font-family:
+          ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
           "Liberation Mono", monospace;
       }
       .toast-layer {
@@ -243,7 +245,9 @@
         line-height: 1.4;
         opacity: 0;
         transform: translateY(-8px);
-        transition: opacity 180ms ease, transform 180ms ease;
+        transition:
+          opacity 180ms ease,
+          transform 180ms ease;
       }
       .toast.show {
         opacity: 1;
@@ -343,6 +347,12 @@
         padding: 12px;
         border-bottom: 1px solid #333;
       }
+      .guide .intro-note {
+        padding: 12px 12px 8px;
+        color: #c8c8c8;
+        line-height: 1.45;
+        font-size: 14px;
+      }
       .json-card {
         width: 100%;
         margin-bottom: 0;
@@ -403,7 +413,8 @@
         background: #171717;
         border: 1px solid #333;
         color: #dfe7f1;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        font-family:
+          ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
           "Liberation Mono", monospace;
         line-height: 1.55;
         text-align: left;
@@ -431,7 +442,8 @@
         line-height: 1.55;
         user-select: none;
         border-right: 1px solid #2a2a2a;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        font-family:
+          ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
           "Liberation Mono", monospace;
       }
       .json-gutter span {
@@ -608,7 +620,8 @@
         background: #171717;
         border: 1px solid #333;
         color: #dfe7f1;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        font-family:
+          ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
           "Liberation Mono", monospace;
         line-height: 1.55;
         text-align: left;
@@ -636,7 +649,8 @@
         line-height: 1.55;
         user-select: none;
         border-right: 1px solid #2a2a2a;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        font-family:
+          ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
           "Liberation Mono", monospace;
       }
       .json-gutter span {
@@ -689,7 +703,15 @@
           <span class="live-dot"></span>
           <span>Live</span>
         </div>
-        <button id="guideToggleBtn" class="info-button" type="button" aria-label="Toggle how to use guide" aria-pressed="false">i</button>
+        <button
+          id="guideToggleBtn"
+          class="info-button"
+          type="button"
+          aria-label="Toggle how to use guide"
+          aria-pressed="false"
+        >
+          i
+        </button>
       </div>
     </header>
     <div class="container">
@@ -700,6 +722,11 @@
       <div class="main" id="mainPane">
         <div class="content" id="contentPane">
           <div class="card guide hidden" id="guideCard">
+            <h3>What Mirror does</h3>
+            <p class="intro-note">
+              Mirror captures HTTP requests and shows them live for quick
+              inspection.
+            </p>
             <h3>How to use Mirror</h3>
             <p>
               Send your request to the full URL shown below to save it here and
@@ -716,29 +743,45 @@
                 <td>Capture and return a request without storing it.</td>
               </tr>
             </table>
-            <p class="copy-hint">Click any endpoint row to copy its full URL.</p>
+            <p class="copy-hint">
+              Click any endpoint row to copy its full URL.
+            </p>
           </div>
           <div class="viewer-bar">
             <div class="viewer-label">Request viewer</div>
-            <div class="viewer-toggle" role="tablist" aria-label="Request viewer mode">
-              <button id="tableViewBtn" class="active" type="button">Table</button>
+            <div
+              class="viewer-toggle"
+              role="tablist"
+              aria-label="Request viewer mode"
+            >
+              <button id="tableViewBtn" class="active" type="button">
+                Table
+              </button>
               <button id="jsonViewBtn" type="button">JSON</button>
             </div>
           </div>
           <div id="details" class="empty">No requests yet.</div>
         </div>
         <div class="footer">
-          ⚠️ Requests are stored temporarily for debugging purposes only.
-          Stored requests are automatically removed within 24 hours and should
-          not be used for permanent storage.
+          ⚠️ Requests are stored temporarily for debugging purposes only. Stored
+          requests are automatically removed within 24 hours and should not be
+          used for permanent storage.
         </div>
       </div>
     </div>
-    <div id="toastLayer" class="toast-layer" aria-live="polite" aria-atomic="true"></div>
+    <div
+      id="toastLayer"
+      class="toast-layer"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
 
     <script>
       let selectedID = null;
-      let detailViewMode = localStorage.getItem("mirrorDetailViewMode") === "json" ? "json" : "table";
+      let detailViewMode =
+        localStorage.getItem("mirrorDetailViewMode") === "json"
+          ? "json"
+          : "table";
       let currentDetailItem = null;
       let guideVisible = true;
 
@@ -782,8 +825,12 @@
       function setViewerMode(mode) {
         detailViewMode = mode;
         localStorage.setItem("mirrorDetailViewMode", mode);
-        document.getElementById("tableViewBtn").classList.toggle("active", mode === "table");
-        document.getElementById("jsonViewBtn").classList.toggle("active", mode === "json");
+        document
+          .getElementById("tableViewBtn")
+          .classList.toggle("active", mode === "table");
+        document
+          .getElementById("jsonViewBtn")
+          .classList.toggle("active", mode === "json");
         if (currentDetailItem) {
           renderDetails(currentDetailItem);
         }
@@ -791,8 +838,12 @@
 
       function setGuideVisibility(visible) {
         guideVisible = visible;
-        document.getElementById("guideCard").classList.toggle("hidden", !visible);
-        document.getElementById("mainPane").classList.toggle("help-mode", visible);
+        document
+          .getElementById("guideCard")
+          .classList.toggle("hidden", !visible);
+        document
+          .getElementById("mainPane")
+          .classList.toggle("help-mode", visible);
         const toggle = document.getElementById("guideToggleBtn");
         toggle.classList.toggle("active", visible);
         toggle.setAttribute("aria-pressed", String(visible));
@@ -836,7 +887,9 @@
 
       function renderJsonView(item) {
         const lines = syntaxHighlight(item).split("\n");
-        const gutter = lines.map((_, index) => `<span>${index + 1}</span>`).join("");
+        const gutter = lines
+          .map((_, index) => `<span>${index + 1}</span>`)
+          .join("");
         return `
           <div class="card json-card">
             <h3 class="json-card-header">
@@ -854,22 +907,28 @@
       }
 
       function renderGuideEndpoints() {
-        document.querySelectorAll(".endpoints tr[data-method][data-path]").forEach((row) => {
-          const method = row.getAttribute("data-method") || "";
-          const path = row.getAttribute("data-path") || "";
-          const endpointCell = row.querySelector("td:first-child");
-          if (endpointCell) {
-            const plainPath = path.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
-            endpointCell.classList.add("endpoint-url");
-            endpointCell.textContent = `${method} ${apiUrl(plainPath)}`;
-          }
-          row.onclick = async () => {
-            const plainPath = (path || "").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
-            const fullUrl = apiUrl(plainPath);
-            await copyText(fullUrl);
-            showToast("Link copied");
-          };
-        });
+        document
+          .querySelectorAll(".endpoints tr[data-method][data-path]")
+          .forEach((row) => {
+            const method = row.getAttribute("data-method") || "";
+            const path = row.getAttribute("data-path") || "";
+            const endpointCell = row.querySelector("td:first-child");
+            if (endpointCell) {
+              const plainPath = path
+                .replace(/&lt;/g, "<")
+                .replace(/&gt;/g, ">");
+              endpointCell.classList.add("endpoint-url");
+              endpointCell.textContent = `${method} ${apiUrl(plainPath)}`;
+            }
+            row.onclick = async () => {
+              const plainPath = (path || "")
+                .replace(/&lt;/g, "<")
+                .replace(/&gt;/g, ">");
+              const fullUrl = apiUrl(plainPath);
+              await copyText(fullUrl);
+              showToast("Link copied");
+            };
+          });
       }
 
       async function copyText(text) {
@@ -959,23 +1018,24 @@
         const r = item.request;
         if (detailViewMode === "json") {
           document.getElementById("details").innerHTML = renderJsonView(item);
-          document.querySelector("[data-copy-json='true']").onclick = async () => {
-            const jsonText = JSON.stringify(item, null, 4);
-            try {
-              await navigator.clipboard.writeText(jsonText);
-            } catch (error) {
-              const fallback = document.createElement("textarea");
-              fallback.value = jsonText;
-              fallback.style.position = "fixed";
-              fallback.style.opacity = "0";
-              document.body.appendChild(fallback);
-              fallback.focus();
-              fallback.select();
-              document.execCommand("copy");
-              document.body.removeChild(fallback);
-            }
-            showToast("JSON copied");
-          };
+          document.querySelector("[data-copy-json='true']").onclick =
+            async () => {
+              const jsonText = JSON.stringify(item, null, 4);
+              try {
+                await navigator.clipboard.writeText(jsonText);
+              } catch (error) {
+                const fallback = document.createElement("textarea");
+                fallback.value = jsonText;
+                fallback.style.position = "fixed";
+                fallback.style.opacity = "0";
+                document.body.appendChild(fallback);
+                fallback.focus();
+                fallback.select();
+                document.execCommand("copy");
+                document.body.removeChild(fallback);
+              }
+              showToast("JSON copied");
+            };
           return;
         }
 
@@ -1009,14 +1069,20 @@
         `;
       }
 
-      document.getElementById("tableViewBtn").onclick = () => setViewerMode("table");
-      document.getElementById("jsonViewBtn").onclick = () => setViewerMode("json");
-      document.getElementById("guideToggleBtn").onclick = () => setGuideVisibility(!guideVisible);
+      document.getElementById("tableViewBtn").onclick = () =>
+        setViewerMode("table");
+      document.getElementById("jsonViewBtn").onclick = () =>
+        setViewerMode("json");
+      document.getElementById("guideToggleBtn").onclick = () =>
+        setGuideVisibility(!guideVisible);
       document.addEventListener("click", (event) => {
         if (!guideVisible) {
           return;
         }
-        if (event.target.closest("#guideCard") || event.target.closest("#guideToggleBtn")) {
+        if (
+          event.target.closest("#guideCard") ||
+          event.target.closest("#guideToggleBtn")
+        ) {
           return;
         }
         closeGuide();
