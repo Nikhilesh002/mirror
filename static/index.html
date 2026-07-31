@@ -748,6 +748,13 @@
         details.classList.toggle("details-content", !isEmpty);
       }
 
+      function setDetailsMessage(message) {
+        const details = document.getElementById("details");
+        details.classList.add("empty");
+        details.classList.remove("details-content");
+        details.textContent = message;
+      }
+
       function apiUrl(path) {
         return `${window.location.origin}${path}`;
       }
@@ -887,7 +894,17 @@
         renderSidebar(data);
         if (selectedID) {
           const req = data.find((r) => r.mirror.id === selectedID);
-          if (req) renderDetails(req);
+          if (req) {
+            renderDetails(req);
+            return;
+          }
+        }
+
+        currentDetailItem = null;
+        if (data.length) {
+          setDetailsMessage("Select a request from the sidebar.");
+        } else {
+          setDetailsMessage("No requests yet.");
         }
       }
 
