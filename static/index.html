@@ -33,6 +33,13 @@
         font-size: 22px;
         font-weight: 700;
       }
+      .brand-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        color: inherit;
+        text-decoration: none;
+      }
       .brand {
         display: inline-flex;
         align-items: center;
@@ -42,6 +49,27 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
+      }
+      .header-live {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 10px;
+        border: 1px solid #2d5f42;
+        border-radius: 999px;
+        background: rgba(34, 77, 53, 0.18);
+        color: #8cf0b3;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+      .header-live .live-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: #61e28c;
+        box-shadow: 0 0 0 rgba(97, 226, 140, 0.45);
+        animation: livePulse 1.5s ease-in-out infinite;
       }
       .info-button {
         appearance: none;
@@ -108,6 +136,17 @@
         color: #c8c8c8;
         line-height: 1.5;
       }
+      .guide .base-url {
+        padding: 0 12px 12px;
+        color: #d7d7d7;
+        line-height: 1.5;
+      }
+      .guide .copy-hint {
+        padding: 0 12px 12px;
+        color: #9ea7b0;
+        font-size: 12px;
+        line-height: 1.4;
+      }
       .guide code {
         padding: 2px 6px;
         border-radius: 4px;
@@ -120,7 +159,7 @@
         align-items: center;
         justify-content: space-between;
         gap: 12px;
-        margin-bottom: 16px;
+        margin-bottom: 4px;
         padding: 12px 14px;
         border: 1px solid #333;
         background: #1f1f1f;
@@ -159,16 +198,61 @@
         width: 100%;
         border-top: 1px solid #333;
       }
+      .endpoints tbody tr {
+        cursor: copy;
+      }
+      .endpoints tbody tr:hover {
+        background: rgba(47, 79, 127, 0.15);
+      }
       .endpoints td:first-child {
         width: 180px;
         color: #8fd1ff;
         font-weight: bold;
         white-space: nowrap;
       }
+      .endpoint-url {
+        color: #bfe6ff;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", monospace;
+      }
       .endpoints td:nth-child(2) {
         color: #eee;
         font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
           "Liberation Mono", monospace;
+      }
+      .toast-layer {
+        position: fixed;
+        top: 72px;
+        right: 20px;
+        z-index: 50;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        pointer-events: none;
+      }
+      .toast {
+        min-width: 220px;
+        max-width: 360px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid #2f6144;
+        background: rgba(20, 34, 24, 0.96);
+        color: #8cf0b3;
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+        font-size: 13px;
+        line-height: 1.4;
+        opacity: 0;
+        transform: translateY(-8px);
+        transition: opacity 180ms ease, transform 180ms ease;
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .toast.error {
+        border-color: #6e3b3b;
+        background: rgba(38, 20, 20, 0.96);
+        color: #f3a7a7;
       }
       .footer {
         flex: 0 0 auto;
@@ -253,11 +337,247 @@
       .card {
         background: #222;
         border: 1px solid #333;
-        margin-bottom: 20px;
+        margin-bottom: 12px;
       }
       .card h3 {
         padding: 12px;
         border-bottom: 1px solid #333;
+      }
+      .json-card {
+        width: 100%;
+        margin-bottom: 0;
+      }
+      .json-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .json-card-actions {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .json-copy-btn {
+        appearance: none;
+        border: 1px solid #3a3a3a;
+        background: #161616;
+        color: #d5d5d5;
+        border-radius: 8px;
+        padding: 6px 10px;
+        cursor: pointer;
+        font: inherit;
+        font-size: 12px;
+        line-height: 1;
+      }
+      .json-copy-btn:hover {
+        background: #232323;
+        color: #fff;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      td {
+        padding: 10px;
+        border-bottom: 1px solid #333;
+        vertical-align: top;
+      }
+      td:first-child {
+        width: 220px;
+        color: #8fd1ff;
+        font-weight: bold;
+      }
+      pre {
+        padding: 15px;
+        white-space: pre-wrap;
+        word-break: break-word;
+        margin: 0;
+      }
+      .json-view {
+        display: block;
+        width: 100%;
+        padding: 16px 18px;
+        overflow: auto;
+        white-space: pre;
+        background: #171717;
+        border: 1px solid #333;
+        color: #dfe7f1;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", monospace;
+        line-height: 1.55;
+        text-align: left;
+        tab-size: 2;
+        -moz-tab-size: 2;
+        margin: 0;
+        min-height: 320px;
+      }
+      .json-editor {
+        display: flex;
+        align-items: stretch;
+        width: 100%;
+        background: #171717;
+        border: 1px solid #333;
+        overflow: auto;
+      }
+      .json-gutter {
+        flex: 0 0 auto;
+        min-width: 56px;
+        padding: 16px 10px 16px 0;
+        background: #101010;
+        color: #6f7680;
+        text-align: right;
+        font-size: 12px;
+        line-height: 1.55;
+        user-select: none;
+        border-right: 1px solid #2a2a2a;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", monospace;
+      }
+      .json-gutter span {
+        display: block;
+        padding-left: 10px;
+      }
+      .json-code {
+        flex: 1 1 auto;
+        min-width: 0;
+        padding: 16px 18px;
+        margin: 0;
+        overflow: visible;
+        white-space: pre;
+        text-align: left;
+        background: transparent;
+        border: 0;
+      }
+      .json-key {
+        color: #8fd1ff;
+      }
+      .json-string {
+        color: #9ff0c7;
+      }
+      .json-number {
+        color: #ffcf7a;
+      }
+      .json-boolean {
+        color: #f28b82;
+      }
+      .json-null {
+        color: #b392f0;
+      }
+      .empty {
+        padding: 40px;
+        color: #888;
+        text-align: center;
+      }
+      .sidebar {
+        width: 340px;
+        background: #1c1c1c;
+        border-right: 1px solid #333;
+        overflow: auto;
+      }
+      .sidebar h2 {
+        padding: 15px;
+        border-bottom: 1px solid #333;
+      }
+      .request {
+        padding: 14px 8px;
+        border-bottom: 1px solid #2b2b2b;
+        cursor: pointer;
+      }
+      .request:hover {
+        background: #2d2d2d;
+      }
+      .request.active {
+        background: #2f4f7f;
+      }
+      .method {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+      .method.get {
+        background: #6ccf8e;
+        color: #0b2e1b;
+      }
+      .method.post {
+        background: #f7d774;
+        color: #473500;
+      }
+      .method.put {
+        background: #6ea8fe;
+        color: #082a59;
+      }
+      .method.patch {
+        background: #b392f0;
+        color: #28124d;
+      }
+      .method.delete {
+        background: #f28b82;
+        color: #4e0f10;
+      }
+      .method.head {
+        background: #8edcb5;
+        color: #173724;
+      }
+      .method.options {
+        background: #f472d0;
+        color: #4d0f39;
+      }
+      .method.default {
+        background: #666;
+        color: #fff;
+      }
+      .path {
+        margin-top: 8px;
+        word-break: break-all;
+      }
+      .time {
+        margin-top: 6px;
+        color: #aaa;
+        font-size: 12px;
+      }
+      .card {
+        background: #222;
+        border: 1px solid #333;
+        margin-bottom: 12px;
+      }
+      .card h3 {
+        padding: 12px;
+        border-bottom: 1px solid #333;
+      }
+      .json-card {
+        width: 100%;
+        margin-bottom: 0;
+      }
+      .json-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .json-card-actions {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .json-copy-btn {
+        appearance: none;
+        border: 1px solid #3a3a3a;
+        background: #161616;
+        color: #d5d5d5;
+        border-radius: 8px;
+        padding: 6px 10px;
+        cursor: pointer;
+        font: inherit;
+        font-size: 12px;
+        line-height: 1;
+      }
+      .json-copy-btn:hover {
+        background: #232323;
+        color: #fff;
       }
       table {
         width: 100%;
@@ -358,11 +678,17 @@
   </head>
   <body>
     <header>
-      <div class="brand">
-        <img src="/logo.svg" alt="Mirror logo" />
-        <span>Mirror</span>
-      </div>
+      <a href="/" class="brand-link" aria-label="Go to home">
+        <div class="brand">
+          <img src="/logo.svg" alt="Mirror logo" />
+          <span>Mirror</span>
+        </div>
+      </a>
       <div class="header-actions">
+        <div class="header-live" aria-label="Live updates enabled">
+          <span class="live-dot"></span>
+          <span>Live</span>
+        </div>
         <button id="guideToggleBtn" class="info-button" type="button" aria-label="Toggle how to use guide" aria-pressed="false">i</button>
       </div>
     </header>
@@ -372,36 +698,25 @@
         <div id="requestList"></div>
       </div>
       <div class="main" id="mainPane">
-        <div class="content">
+        <div class="content" id="contentPane">
           <div class="card guide hidden" id="guideCard">
             <h3>How to use Mirror</h3>
             <p>
-              Send your request to <code>/api/store</code> to save it here and
-              see it in the request list. Use <code>/api/mirror</code> if you
-              only want to preview the captured request without storing it.
+              Send your request to the full URL shown below to save it here and
+              see it in the request list. Use the mirror endpoint if you only
+              want to preview the captured request without storing it.
             </p>
             <table class="endpoints">
-              <tr>
-                <td>GET /api/health</td>
-                <td>Health check for the service.</td>
-              </tr>
-              <tr>
+              <tr data-method="ANY" data-path="/api/store">
                 <td>ANY /api/store</td>
                 <td>Capture and store a request so it appears in this UI.</td>
               </tr>
-              <tr>
+              <tr data-method="ANY" data-path="/api/mirror">
                 <td>ANY /api/mirror</td>
                 <td>Capture and return a request without storing it.</td>
               </tr>
-              <tr>
-                <td>GET /api/requests</td>
-                <td>List all stored requests shown in the sidebar.</td>
-              </tr>
-              <tr>
-                <td>GET /api/request/&lt;id&gt;</td>
-                <td>Fetch one stored request by ID.</td>
-              </tr>
             </table>
+            <p class="copy-hint">Click any endpoint row to copy its full URL.</p>
           </div>
           <div class="viewer-bar">
             <div class="viewer-label">Request viewer</div>
@@ -419,12 +734,43 @@
         </div>
       </div>
     </div>
+    <div id="toastLayer" class="toast-layer" aria-live="polite" aria-atomic="true"></div>
 
     <script>
       let selectedID = null;
       let detailViewMode = localStorage.getItem("mirrorDetailViewMode") === "json" ? "json" : "table";
       let currentDetailItem = null;
-      let guideVisible = false;
+      let guideVisible = true;
+
+      function setDetailsEmpty(isEmpty) {
+        const details = document.getElementById("details");
+        details.classList.toggle("empty", isEmpty);
+        details.classList.toggle("details-content", !isEmpty);
+      }
+
+      function apiUrl(path) {
+        return `${window.location.origin}${path}`;
+      }
+
+      function showToast(message, type = "success") {
+        const layer = document.getElementById("toastLayer");
+        const toast = document.createElement("div");
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        layer.appendChild(toast);
+        requestAnimationFrame(() => {
+          toast.classList.add("show");
+        });
+
+        window.setTimeout(() => {
+          toast.classList.remove("show");
+          window.setTimeout(() => {
+            if (toast.parentNode) {
+              toast.parentNode.removeChild(toast);
+            }
+          }, 200);
+        }, 1800);
+      }
 
       function setViewerMode(mode) {
         detailViewMode = mode;
@@ -460,7 +806,7 @@
       }
 
       function syntaxHighlight(value) {
-        const json = JSON.stringify(value, null, 2) || "{}";
+        const json = JSON.stringify(value, null, 4) || "{}";
         const escaped = escapeHtml(json);
         return escaped.replace(
           /(&quot;(?:\\u[a-fA-F0-9]{4}|\\[^u]|[^\\&])*&quot;\s*:?)|\b(true|false)\b|\b(null)\b|\b(-?\d+(?:\.\d+)?(?:[eE][+\-]?\d+)?)\b/g,
@@ -485,14 +831,54 @@
         const lines = syntaxHighlight(item).split("\n");
         const gutter = lines.map((_, index) => `<span>${index + 1}</span>`).join("");
         return `
-          <div class="card">
-            <h3>Request JSON</h3>
+          <div class="card json-card">
+            <h3 class="json-card-header">
+              <span>Response JSON</span>
+              <span class="json-card-actions">
+                <button class="json-copy-btn" type="button" data-copy-json="true">Copy JSON</button>
+              </span>
+            </h3>
             <div class="json-editor">
               <div class="json-gutter">${gutter}</div>
               <pre class="json-code">${lines.join("\n")}</pre>
             </div>
           </div>
         `;
+      }
+
+      function renderGuideEndpoints() {
+        document.querySelectorAll(".endpoints tr[data-method][data-path]").forEach((row) => {
+          const method = row.getAttribute("data-method") || "";
+          const path = row.getAttribute("data-path") || "";
+          const endpointCell = row.querySelector("td:first-child");
+          if (endpointCell) {
+            const plainPath = path.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+            endpointCell.classList.add("endpoint-url");
+            endpointCell.textContent = `${method} ${apiUrl(plainPath)}`;
+          }
+          row.onclick = async () => {
+            const plainPath = (path || "").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+            const fullUrl = apiUrl(plainPath);
+            await copyText(fullUrl);
+            showToast("Link copied");
+          };
+        });
+      }
+
+      async function copyText(text) {
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch (error) {
+          const fallback = document.createElement("textarea");
+          fallback.value = text;
+          fallback.style.position = "fixed";
+          fallback.style.opacity = "0";
+          document.body.appendChild(fallback);
+          fallback.focus();
+          fallback.select();
+          document.execCommand("copy");
+          document.body.removeChild(fallback);
+        }
       }
 
       async function refresh() {
@@ -551,10 +937,28 @@
 
       function renderDetails(item) {
         currentDetailItem = item;
+        setDetailsEmpty(false);
         const m = item.mirror;
         const r = item.request;
         if (detailViewMode === "json") {
           document.getElementById("details").innerHTML = renderJsonView(item);
+          document.querySelector("[data-copy-json='true']").onclick = async () => {
+            const jsonText = JSON.stringify(item, null, 4);
+            try {
+              await navigator.clipboard.writeText(jsonText);
+            } catch (error) {
+              const fallback = document.createElement("textarea");
+              fallback.value = jsonText;
+              fallback.style.position = "fixed";
+              fallback.style.opacity = "0";
+              document.body.appendChild(fallback);
+              fallback.focus();
+              fallback.select();
+              document.execCommand("copy");
+              document.body.removeChild(fallback);
+            }
+            showToast("JSON copied");
+          };
           return;
         }
 
@@ -602,10 +1006,12 @@
       });
 
       setViewerMode(detailViewMode);
-      setGuideVisibility(false);
+      setGuideVisibility(guideVisible);
+      setDetailsEmpty(true);
+      renderGuideEndpoints();
 
       refresh();
-      setInterval(refresh, 2000);
+      setInterval(refresh, 5000);
     </script>
   </body>
 </html>
