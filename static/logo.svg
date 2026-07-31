@@ -1,0 +1,25 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mirror logo">
+  <defs>
+    <linearGradient id="frame" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#78E9C4" />
+      <stop offset="0.45" stop-color="#57B8FF" />
+      <stop offset="1" stop-color="#8B78FF" />
+    </linearGradient>
+    <linearGradient id="panel" x1="16" y1="16" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#18253D" />
+      <stop offset="1" stop-color="#0E1527" />
+    </linearGradient>
+    <linearGradient id="m" x1="18" y1="20" x2="46" y2="44" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F1FAFF" />
+      <stop offset="1" stop-color="#CFE9FF" />
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="56" height="56" rx="18" fill="#101728" />
+  <rect x="4.75" y="4.75" width="54.5" height="54.5" rx="17.25" stroke="url(#frame)" stroke-width="1.5" />
+  <rect x="15" y="15" width="34" height="34" rx="12" fill="url(#panel)" stroke="rgba(255,255,255,0.06)" />
+  <path d="M19 42V22L27 34L32 25.8L37 34L45 22V42" stroke="url(#m)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M19 42V22L27 34L32 25.8L37 34L45 22V42" stroke="#7DEAD1" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" opacity="0.38" />
+  <path d="M20 40.5H44" stroke="#B7C6D6" stroke-opacity="0.72" stroke-width="2.4" stroke-linecap="round" />
+  <path d="M19 23L45 49" stroke="#D8E6FF" stroke-opacity="0.12" stroke-width="1.6" stroke-linecap="round" />
+  <circle cx="42.5" cy="22.5" r="1.8" fill="#6DE9B8" />
+</svg>

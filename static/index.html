@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mirror</title>
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <link rel="shortcut icon" href="/logo.svg" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Inter, Arial, sans-serif;
+      }
+      body {
+        background: #181818;
+        color: #eee;
+        height: 100vh;
+        display: grid;
+        grid-template-rows: 56px minmax(0, 1fr) auto;
+        overflow: hidden;
+      }
+      header {
+        grid-row: 1;
+        height: 56px;
+        background: #202124;
+        border-bottom: 1px solid #333;
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        font-size: 22px;
+        font-weight: 700;
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .brand img {
+        width: 28px;
+        height: 28px;
+        object-fit: contain;
+        display: block;
+        flex: 0 0 auto;
+      }
+      .container {
+        grid-row: 2;
+        display: flex;
+        min-height: 0;
+      }
+      .main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        min-height: 0;
+      }
+      .content {
+        flex: 1 1 auto;
+        overflow: auto;
+        padding: 20px;
+        min-height: 0;
+      }
+      .footer {
+        flex: 0 0 auto;
+        width: 100%;
+        padding: 12px 20px;
+        border-top: 1px solid #333;
+        background: #141414;
+        color: #9b9b9b;
+        font-size: 12px;
+        line-height: 1.45;
+      }
+      .sidebar {
+        width: 340px;
+        background: #1c1c1c;
+        border-right: 1px solid #333;
+        overflow: auto;
+      }
+      .sidebar h2 {
+        padding: 15px;
+        border-bottom: 1px solid #333;
+      }
+      .request {
+        padding: 14px 8px;
+        border-bottom: 1px solid #2b2b2b;
+        cursor: pointer;
+      }
+      .request:hover {
+        background: #2d2d2d;
+      }
+      .request.active {
+        background: #2f4f7f;
+      }
+      .method {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+      .method.get {
+        background: #6ccf8e;
+        color: #0b2e1b;
+      }
+      .method.post {
+        background: #f7d774;
+        color: #473500;
+      }
+      .method.put {
+        background: #6ea8fe;
+        color: #082a59;
+      }
+      .method.patch {
+        background: #b392f0;
+        color: #28124d;
+      }
+      .method.delete {
+        background: #f28b82;
+        color: #4e0f10;
+      }
+      .method.head {
+        background: #8edcb5;
+        color: #173724;
+      }
+      .method.options {
+        background: #f472d0;
+        color: #4d0f39;
+      }
+      .method.default {
+        background: #666;
+        color: #fff;
+      }
+      .path {
+        margin-top: 8px;
+        word-break: break-all;
+      }
+      .time {
+        margin-top: 6px;
+        color: #aaa;
+        font-size: 12px;
+      }
+      .card {
+        background: #222;
+        border: 1px solid #333;
+        margin-bottom: 20px;
+      }
+      .card h3 {
+        padding: 12px;
+        border-bottom: 1px solid #333;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      td {
+        padding: 10px;
+        border-bottom: 1px solid #333;
+        vertical-align: top;
+      }
+      td:first-child {
+        width: 220px;
+        color: #8fd1ff;
+        font-weight: bold;
+      }
+      pre {
+        padding: 15px;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      .empty {
+        padding: 40px;
+        color: #888;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <img src="/logo.svg" alt="Mirror logo" />
+        <span>Mirror</span>
+      </div>
+    </header>
+    <div class="container">
+      <div class="sidebar">
+        <h2>Requests</h2>
+        <div id="requestList"></div>
+      </div>
+      <div class="main">
+        <div class="content">
+          <div id="details" class="empty">No requests yet.</div>
+        </div>
+        <div class="footer">
+          ⚠️ Requests are stored temporarily for debugging purposes only.
+          Stored requests are automatically removed within 24 hours and should
+          not be used for permanent storage.
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let selectedID = null;
+
+      async function refresh() {
+        const res = await fetch("/api/requests");
+        const data = await res.json();
+        renderSidebar(data);
+        if (selectedID) {
+          const req = data.find((r) => r.mirror.id === selectedID);
+          if (req) renderDetails(req);
+        }
+      }
+
+      function renderSidebar(data) {
+        const root = document.getElementById("requestList");
+        root.innerHTML = "";
+        data.forEach((item) => {
+          const req = item.request;
+          const meta = item.mirror;
+          const method = req.method.toLowerCase();
+          const cls = [
+            "get",
+            "post",
+            "put",
+            "patch",
+            "delete",
+            "head",
+            "options",
+          ].includes(method)
+            ? method
+            : "default";
+          const div = document.createElement("div");
+          div.className = "request" + (meta.id === selectedID ? " active" : "");
+          div.innerHTML = `
+     <div class="method ${cls}">${req.method}</div>
+     <div class="path">${req.path}</div>
+     <div class="time">${new Date(meta.received_at).toLocaleString()}</div>`;
+          div.onclick = () => {
+            selectedID = meta.id;
+            renderSidebar(data);
+            renderDetails(item);
+          };
+          root.appendChild(div);
+        });
+      }
+
+      function rows(obj) {
+        const e = Object.entries(obj || {});
+        if (!e.length) return "<tr><td colspan='2'>None</td></tr>";
+        return e
+          .map(
+            ([k, v]) =>
+              `<tr><td>${k}</td><td>${Array.isArray(v) ? v.join(", ") : v}</td></tr>`,
+          )
+          .join("");
+      }
+
+      function escapeHtml(s) {
+        return (s || "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;");
+      }
+
+      function renderDetails(item) {
+        const m = item.mirror;
+        const r = item.request;
+        document.getElementById("details").innerHTML = `
+ <div class="card">
+ <h3>Mirror</h3>
+ <table>
+ <tr><td>ID</td><td>${m.id}</td></tr>
+ <tr><td>Received At</td><td>${new Date(m.received_at).toLocaleString()}</td></tr>
+ <tr><td>Stored</td><td>${m.stored}</td></tr>
+ <tr><td>Version</td><td>${m.version}</td></tr>
+ <tr><td>Request Size</td><td>${m.request_size} bytes</td></tr>
+ </table>
+ </div>
+
+ <div class="card">
+ <h3>Request</h3>
+ <table>
+ <tr><td>Method</td><td>${r.method}</td></tr>
+ <tr><td>URL</td><td>${r.url}</td></tr>
+ <tr><td>Host</td><td>${r.host}</td></tr>
+ <tr><td>Protocol</td><td>${r.proto}</td></tr>
+ <tr><td>Remote Addr</td><td>${r.remote_addr}</td></tr>
+ <tr><td>Content Length</td><td>${r.content_length}</td></tr>
+ </table>
+ </div>
+
+ <div class="card"><h3>Headers</h3><table>${rows(r.headers)}</table></div>
+ <div class="card"><h3>Query Parameters</h3><table>${rows(r.query)}</table></div>
+ <div class="card"><h3>Body</h3><pre>${escapeHtml(r.body || "")}</pre></div>
+ `;
+      }
+
+      refresh();
+      setInterval(refresh, 2000);
+    </script>
+  </body>
+</html>
