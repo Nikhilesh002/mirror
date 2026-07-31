@@ -28,6 +28,7 @@
         border-bottom: 1px solid #333;
         display: flex;
         align-items: center;
+        justify-content: space-between;
         padding: 0 20px;
         font-size: 22px;
         font-weight: 700;
@@ -36,6 +37,36 @@
         display: inline-flex;
         align-items: center;
         gap: 12px;
+      }
+      .header-actions {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .info-button {
+        appearance: none;
+        border: 1px solid #3a3a3a;
+        background: #161616;
+        color: #d5d5d5;
+        border-radius: 10px;
+        width: 34px;
+        height: 34px;
+        cursor: pointer;
+        font: inherit;
+        font-size: 16px;
+        line-height: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .info-button:hover {
+        background: #232323;
+        color: #fff;
+      }
+      .info-button.active {
+        background: #2f4f7f;
+        color: #fff;
+        border-color: #37659d;
       }
       .brand img {
         width: 28px;
@@ -56,11 +87,88 @@
         min-width: 0;
         min-height: 0;
       }
+      .main.help-mode .viewer-bar,
+      .main.help-mode #details {
+        display: none;
+      }
       .content {
         flex: 1 1 auto;
         overflow: auto;
         padding: 20px;
         min-height: 0;
+      }
+      .guide {
+        margin-bottom: 20px;
+      }
+      .guide.hidden {
+        display: none;
+      }
+      .guide p {
+        padding: 0 12px 12px;
+        color: #c8c8c8;
+        line-height: 1.5;
+      }
+      .guide code {
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: #111;
+        color: #cfe9ff;
+        border: 1px solid #2e2e2e;
+      }
+      .viewer-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 16px;
+        padding: 12px 14px;
+        border: 1px solid #333;
+        background: #1f1f1f;
+      }
+      .viewer-label {
+        color: #b8b8b8;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .viewer-toggle {
+        display: inline-flex;
+        border: 1px solid #3a3a3a;
+        border-radius: 10px;
+        overflow: hidden;
+        background: #161616;
+      }
+      .viewer-toggle button {
+        appearance: none;
+        border: 0;
+        background: transparent;
+        color: #bdbdbd;
+        padding: 8px 12px;
+        font: inherit;
+        font-size: 13px;
+        cursor: pointer;
+      }
+      .viewer-toggle button:hover {
+        background: #232323;
+        color: #fff;
+      }
+      .viewer-toggle button.active {
+        background: #2f4f7f;
+        color: #fff;
+      }
+      .endpoints {
+        width: 100%;
+        border-top: 1px solid #333;
+      }
+      .endpoints td:first-child {
+        width: 180px;
+        color: #8fd1ff;
+        font-weight: bold;
+        white-space: nowrap;
+      }
+      .endpoints td:nth-child(2) {
+        color: #eee;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", monospace;
       }
       .footer {
         flex: 0 0 auto;
@@ -169,6 +277,77 @@
         padding: 15px;
         white-space: pre-wrap;
         word-break: break-word;
+        margin: 0;
+      }
+      .json-view {
+        display: block;
+        width: 100%;
+        padding: 16px 18px;
+        overflow: auto;
+        white-space: pre;
+        background: #171717;
+        border: 1px solid #333;
+        color: #dfe7f1;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", monospace;
+        line-height: 1.55;
+        text-align: left;
+        tab-size: 2;
+        -moz-tab-size: 2;
+        margin: 0;
+        min-height: 320px;
+      }
+      .json-editor {
+        display: flex;
+        align-items: stretch;
+        width: 100%;
+        background: #171717;
+        border: 1px solid #333;
+        overflow: auto;
+      }
+      .json-gutter {
+        flex: 0 0 auto;
+        min-width: 56px;
+        padding: 16px 10px 16px 0;
+        background: #101010;
+        color: #6f7680;
+        text-align: right;
+        font-size: 12px;
+        line-height: 1.55;
+        user-select: none;
+        border-right: 1px solid #2a2a2a;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", monospace;
+      }
+      .json-gutter span {
+        display: block;
+        padding-left: 10px;
+      }
+      .json-code {
+        flex: 1 1 auto;
+        min-width: 0;
+        padding: 16px 18px;
+        margin: 0;
+        overflow: visible;
+        white-space: pre;
+        text-align: left;
+        background: transparent;
+        border: 0;
+      }
+      .json-key {
+        color: #8fd1ff;
+      }
+      .json-string {
+        color: #9ff0c7;
+      }
+      .json-number {
+        color: #ffcf7a;
+      }
+      .json-boolean {
+        color: #f28b82;
+      }
+      .json-null {
+        color: #b392f0;
       }
       .empty {
         padding: 40px;
@@ -183,14 +362,54 @@
         <img src="/logo.svg" alt="Mirror logo" />
         <span>Mirror</span>
       </div>
+      <div class="header-actions">
+        <button id="guideToggleBtn" class="info-button" type="button" aria-label="Toggle how to use guide" aria-pressed="false">i</button>
+      </div>
     </header>
     <div class="container">
       <div class="sidebar">
         <h2>Requests</h2>
         <div id="requestList"></div>
       </div>
-      <div class="main">
+      <div class="main" id="mainPane">
         <div class="content">
+          <div class="card guide hidden" id="guideCard">
+            <h3>How to use Mirror</h3>
+            <p>
+              Send your request to <code>/api/store</code> to save it here and
+              see it in the request list. Use <code>/api/mirror</code> if you
+              only want to preview the captured request without storing it.
+            </p>
+            <table class="endpoints">
+              <tr>
+                <td>GET /api/health</td>
+                <td>Health check for the service.</td>
+              </tr>
+              <tr>
+                <td>ANY /api/store</td>
+                <td>Capture and store a request so it appears in this UI.</td>
+              </tr>
+              <tr>
+                <td>ANY /api/mirror</td>
+                <td>Capture and return a request without storing it.</td>
+              </tr>
+              <tr>
+                <td>GET /api/requests</td>
+                <td>List all stored requests shown in the sidebar.</td>
+              </tr>
+              <tr>
+                <td>GET /api/request/&lt;id&gt;</td>
+                <td>Fetch one stored request by ID.</td>
+              </tr>
+            </table>
+          </div>
+          <div class="viewer-bar">
+            <div class="viewer-label">Request viewer</div>
+            <div class="viewer-toggle" role="tablist" aria-label="Request viewer mode">
+              <button id="tableViewBtn" class="active" type="button">Table</button>
+              <button id="jsonViewBtn" type="button">JSON</button>
+            </div>
+          </div>
           <div id="details" class="empty">No requests yet.</div>
         </div>
         <div class="footer">
@@ -203,6 +422,78 @@
 
     <script>
       let selectedID = null;
+      let detailViewMode = localStorage.getItem("mirrorDetailViewMode") === "json" ? "json" : "table";
+      let currentDetailItem = null;
+      let guideVisible = false;
+
+      function setViewerMode(mode) {
+        detailViewMode = mode;
+        localStorage.setItem("mirrorDetailViewMode", mode);
+        document.getElementById("tableViewBtn").classList.toggle("active", mode === "table");
+        document.getElementById("jsonViewBtn").classList.toggle("active", mode === "json");
+        if (currentDetailItem) {
+          renderDetails(currentDetailItem);
+        }
+      }
+
+      function setGuideVisibility(visible) {
+        guideVisible = visible;
+        document.getElementById("guideCard").classList.toggle("hidden", !visible);
+        document.getElementById("mainPane").classList.toggle("help-mode", visible);
+        const toggle = document.getElementById("guideToggleBtn");
+        toggle.classList.toggle("active", visible);
+        toggle.setAttribute("aria-pressed", String(visible));
+      }
+
+      function closeGuide() {
+        if (guideVisible) {
+          setGuideVisibility(false);
+        }
+      }
+
+      function escapeHtml(s) {
+        return (s || "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;");
+      }
+
+      function syntaxHighlight(value) {
+        const json = JSON.stringify(value, null, 2) || "{}";
+        const escaped = escapeHtml(json);
+        return escaped.replace(
+          /(&quot;(?:\\u[a-fA-F0-9]{4}|\\[^u]|[^\\&])*&quot;\s*:?)|\b(true|false)\b|\b(null)\b|\b(-?\d+(?:\.\d+)?(?:[eE][+\-]?\d+)?)\b/g,
+          (match) => {
+            if (match.startsWith("&quot;")) {
+              return match.endsWith(":")
+                ? `<span class="json-key">${match}</span>`
+                : `<span class="json-string">${match}</span>`;
+            }
+            if (match === "true" || match === "false") {
+              return `<span class="json-boolean">${match}</span>`;
+            }
+            if (match === "null") {
+              return `<span class="json-null">${match}</span>`;
+            }
+            return `<span class="json-number">${match}</span>`;
+          },
+        );
+      }
+
+      function renderJsonView(item) {
+        const lines = syntaxHighlight(item).split("\n");
+        const gutter = lines.map((_, index) => `<span>${index + 1}</span>`).join("");
+        return `
+          <div class="card">
+            <h3>Request JSON</h3>
+            <div class="json-editor">
+              <div class="json-gutter">${gutter}</div>
+              <pre class="json-code">${lines.join("\n")}</pre>
+            </div>
+          </div>
+        `;
+      }
 
       async function refresh() {
         const res = await fetch("/api/requests");
@@ -258,45 +549,60 @@
           .join("");
       }
 
-      function escapeHtml(s) {
-        return (s || "")
-          .replaceAll("&", "&amp;")
-          .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;");
-      }
-
       function renderDetails(item) {
+        currentDetailItem = item;
         const m = item.mirror;
         const r = item.request;
+        if (detailViewMode === "json") {
+          document.getElementById("details").innerHTML = renderJsonView(item);
+          return;
+        }
+
         document.getElementById("details").innerHTML = `
- <div class="card">
- <h3>Mirror</h3>
- <table>
- <tr><td>ID</td><td>${m.id}</td></tr>
- <tr><td>Received At</td><td>${new Date(m.received_at).toLocaleString()}</td></tr>
- <tr><td>Stored</td><td>${m.stored}</td></tr>
- <tr><td>Version</td><td>${m.version}</td></tr>
- <tr><td>Request Size</td><td>${m.request_size} bytes</td></tr>
- </table>
- </div>
+          <div class="card">
+            <h3>Mirror</h3>
+            <table>
+              <tr><td>ID</td><td>${m.id}</td></tr>
+              <tr><td>Received At</td><td>${new Date(m.received_at).toLocaleString()}</td></tr>
+              <tr><td>Stored</td><td>${m.stored}</td></tr>
+              <tr><td>Version</td><td>${m.version}</td></tr>
+              <tr><td>Request Size</td><td>${m.request_size} bytes</td></tr>
+            </table>
+          </div>
 
- <div class="card">
- <h3>Request</h3>
- <table>
- <tr><td>Method</td><td>${r.method}</td></tr>
- <tr><td>URL</td><td>${r.url}</td></tr>
- <tr><td>Host</td><td>${r.host}</td></tr>
- <tr><td>Protocol</td><td>${r.proto}</td></tr>
- <tr><td>Remote Addr</td><td>${r.remote_addr}</td></tr>
- <tr><td>Content Length</td><td>${r.content_length}</td></tr>
- </table>
- </div>
+          <div class="card">
+            <h3>Request</h3>
+            <table>
+              <tr><td>Method</td><td>${r.method}</td></tr>
+              <tr><td>URL</td><td>${r.url}</td></tr>
+              <tr><td>Host</td><td>${r.host}</td></tr>
+              <tr><td>Protocol</td><td>${r.proto}</td></tr>
+              <tr><td>Remote Addr</td><td>${r.remote_addr}</td></tr>
+              <tr><td>Content Length</td><td>${r.content_length}</td></tr>
+            </table>
+          </div>
 
- <div class="card"><h3>Headers</h3><table>${rows(r.headers)}</table></div>
- <div class="card"><h3>Query Parameters</h3><table>${rows(r.query)}</table></div>
- <div class="card"><h3>Body</h3><pre>${escapeHtml(r.body || "")}</pre></div>
- `;
+          <div class="card"><h3>Headers</h3><table>${rows(r.headers)}</table></div>
+          <div class="card"><h3>Query Parameters</h3><table>${rows(r.query)}</table></div>
+          <div class="card"><h3>Body</h3><pre>${escapeHtml(r.body || "")}</pre></div>
+        `;
       }
+
+      document.getElementById("tableViewBtn").onclick = () => setViewerMode("table");
+      document.getElementById("jsonViewBtn").onclick = () => setViewerMode("json");
+      document.getElementById("guideToggleBtn").onclick = () => setGuideVisibility(!guideVisible);
+      document.addEventListener("click", (event) => {
+        if (!guideVisible) {
+          return;
+        }
+        if (event.target.closest("#guideCard") || event.target.closest("#guideToggleBtn")) {
+          return;
+        }
+        closeGuide();
+      });
+
+      setViewerMode(detailViewMode);
+      setGuideVisibility(false);
 
       refresh();
       setInterval(refresh, 2000);
