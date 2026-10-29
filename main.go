@@ -11,7 +11,6 @@ import (
 	"sort"
 	"strings"
 	"sync"
-	"syscall"
 	"time"
 )
 
@@ -61,19 +60,17 @@ func main() {
 	mux.HandleFunc("/api/requests", list)
 	mux.HandleFunc("/api/request/", get)
 
-	mux.HandleFunc("/exp/conn-reset", connReset)
+	mux.HandleFunc("/api/exp/conn-reset", connReset)
+	mux.HandleFunc("/api/exp/wait300sec", wait300sec)
 
 	log.Println("Mirror running on :8080")
 	log.Fatal(http.ListenAndServe(":8080", mux))
 }
 
-// connReset deliberately resets the TCP connection.
-// Linux-specific: uses SO_LINGER with a zero timeout.
-// Intended only for isolated development/testing environments.
 func connReset(w http.ResponseWriter, r *http.Request) {
 	hj, ok := w.(http.Hijacker)
 	if !ok {
-		http.Error(w, "HTTP hijacking unsupported", http.StatusInternalServerError)
+		http.Error(w, "Hijacking unsupported", http.StatusInternalServerError)
 		return
 	}
 
@@ -83,58 +80,61 @@ func connReset(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// For HTTPS, net/http normally gives us a *tls.Conn.
-	// NetConn exposes its underlying TCP connection.
+	// A TLS listener normally returns *tls.Conn after hijacking.
+	// Retrieve the underlying TCP connection.
 	type netConner interface {
 		NetConn() net.Conn
 	}
 
-	tcpConn := conn
+	rawConn := conn
 	if tc, ok := conn.(netConner); ok {
-		tcpConn = tc.NetConn()
+		rawConn = tc.NetConn()
 	}
 
-	sc, ok := tcpConn.(syscall.Conn)
+	tcpConn, ok := rawConn.(*net.TCPConn)
 	if !ok {
-		log.Printf("Connection does not expose a syscall.Conn")
+		log.Printf("Not a TCP connection: %T", rawConn)
 		_ = conn.Close()
 		return
 	}
 
-	raw, err := sc.SyscallConn()
-	if err != nil {
-		log.Printf("SyscallConn failed: %v", err)
-		_ = conn.Close()
+	// Linux: closing a TCP socket with SO_LINGER=0
+	// requests an abortive close (RST).
+	if err := tcpConn.SetLinger(0); err != nil {
+		log.Printf("SetLinger failed: %v", err)
+		_ = tcpConn.Close()
 		return
 	}
 
-	var sockErr error
-	err = raw.Control(func(fd uintptr) {
-		linger := &syscall.Linger{
-			Onoff:  1,
-			Linger: 0,
-		}
-		sockErr = syscall.SetsockoptLinger(
-			int(fd),
-			syscall.SOL_SOCKET,
-			syscall.SO_LINGER,
-			linger,
-		)
-	})
+	log.Printf(
+		"Forcing TCP reset for %s %s from %s",
+		r.Method, r.URL.Path, r.RemoteAddr,
+	)
 
-	if err != nil || sockErr != nil {
-		log.Printf("Failed to configure TCP reset: control=%v socket=%v",
-			err, sockErr)
-		_ = conn.Close()
-		return
+	// Close the underlying TCP socket directly. Do not write
+	// an HTTP status code or send a response body.
+	if err := tcpConn.Close(); err != nil {
+		log.Printf("TCP close: %v", err)
 	}
+}
 
-	log.Printf("Forcing TCP reset: %s %s from %s",
-		r.Method, r.URL.Path, r.RemoteAddr)
+func wait300sec(w http.ResponseWriter, r *http.Request) {
+    log.Printf("Started 300-second wait: %s %s", r.Method, r.URL.Path)
 
-	// Do not write an HTTP status or response body.
-	// Closing with SO_LINGER=0 requests a TCP RST.
-	_ = conn.Close()
+    timer := time.NewTimer(300 * time.Second)
+    defer timer.Stop()
+
+    select {
+    case <-timer.C:
+        w.Header().Set("Content-Type", "text/plain")
+        w.WriteHeader(http.StatusOK)
+        _, _ = w.Write([]byte("OK - response sent after 300 seconds\n"))
+        log.Println("Completed 300-second wait")
+    case <-r.Context().Done():
+        // Client disconnected or cancelled the request.
+        log.Println("Client disconnected during 300-second wait")
+        return
+    }
 }
 
 func health(w http.ResponseWriter, r *http.Request) {
