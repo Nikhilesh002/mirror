@@ -6,10 +6,12 @@ import (
 	"encoding/json"
 	"io"
 	"log"
+	"net"
 	"net/http"
 	"sort"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
 )
 
@@ -40,8 +42,8 @@ type RequestData struct {
 }
 
 type MirrorResponse struct {
-	Mirror MirrorMetadata `json:"mirror"`
-	Request RequestData   `json:"request"`
+	Mirror  MirrorMetadata `json:"mirror"`
+	Request RequestData    `json:"request"`
 }
 
 var (
@@ -59,8 +61,80 @@ func main() {
 	mux.HandleFunc("/api/requests", list)
 	mux.HandleFunc("/api/request/", get)
 
+	mux.HandleFunc("/exp/conn-reset", connReset)
+
 	log.Println("Mirror running on :8080")
 	log.Fatal(http.ListenAndServe(":8080", mux))
+}
+
+// connReset deliberately resets the TCP connection.
+// Linux-specific: uses SO_LINGER with a zero timeout.
+// Intended only for isolated development/testing environments.
+func connReset(w http.ResponseWriter, r *http.Request) {
+	hj, ok := w.(http.Hijacker)
+	if !ok {
+		http.Error(w, "HTTP hijacking unsupported", http.StatusInternalServerError)
+		return
+	}
+
+	conn, _, err := hj.Hijack()
+	if err != nil {
+		log.Printf("Hijack failed: %v", err)
+		return
+	}
+
+	// For HTTPS, net/http normally gives us a *tls.Conn.
+	// NetConn exposes its underlying TCP connection.
+	type netConner interface {
+		NetConn() net.Conn
+	}
+
+	tcpConn := conn
+	if tc, ok := conn.(netConner); ok {
+		tcpConn = tc.NetConn()
+	}
+
+	sc, ok := tcpConn.(syscall.Conn)
+	if !ok {
+		log.Printf("Connection does not expose a syscall.Conn")
+		_ = conn.Close()
+		return
+	}
+
+	raw, err := sc.SyscallConn()
+	if err != nil {
+		log.Printf("SyscallConn failed: %v", err)
+		_ = conn.Close()
+		return
+	}
+
+	var sockErr error
+	err = raw.Control(func(fd uintptr) {
+		linger := &syscall.Linger{
+			Onoff:  1,
+			Linger: 0,
+		}
+		sockErr = syscall.SetsockoptLinger(
+			int(fd),
+			syscall.SOL_SOCKET,
+			syscall.SO_LINGER,
+			linger,
+		)
+	})
+
+	if err != nil || sockErr != nil {
+		log.Printf("Failed to configure TCP reset: control=%v socket=%v",
+			err, sockErr)
+		_ = conn.Close()
+		return
+	}
+
+	log.Printf("Forcing TCP reset: %s %s from %s",
+		r.Method, r.URL.Path, r.RemoteAddr)
+
+	// Do not write an HTTP status or response body.
+	// Closing with SO_LINGER=0 requests a TCP RST.
+	_ = conn.Close()
 }
 
 func health(w http.ResponseWriter, r *http.Request) {
@@ -117,10 +191,10 @@ func store(w http.ResponseWriter, r *http.Request) {
 
 func list(w http.ResponseWriter, r *http.Request) {
 	// Only allow GET requests for this endpoint
-    if r.Method != http.MethodGet {
-        http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-        return
-    }
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	mu.RLock()
 	defer mu.RUnlock()
@@ -130,11 +204,11 @@ func list(w http.ResponseWriter, r *http.Request) {
 
 func get(w http.ResponseWriter, r *http.Request) {
 	// Only allow GET requests for this endpoint
-    if r.Method != http.MethodGet {
-        http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-        return
-    }
-	
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	id := strings.TrimPrefix(r.URL.Path, "/api/request/")
 	mu.RLock()
 	defer mu.RUnlock()
